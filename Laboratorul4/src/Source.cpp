@@ -11,7 +11,7 @@ unsigned char prevKey;
 
 auto grila = new GrilaCarteziana(numar);
 
-void Init(void) 
+void Init()
 {
 	glClearColor(1.0,1.0,1.0,1.0);
 	glLineWidth(1);
@@ -19,7 +19,7 @@ void Init(void)
 	glMatrixMode(GL_PROJECTION);
 }
 
-void Display(void) 
+void Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
