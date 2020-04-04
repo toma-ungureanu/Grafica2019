@@ -3,14 +3,12 @@
 #include <cstdlib>
 #include <list>
 
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-
 using namespace std;
 unsigned char prevKey;
 
-auto grila = new GrilaCarteziana("poligon1.txt");
+auto grila = new GrilaCarteziana("../poligons/poligon1.txt");
 
-void Init(void) 
+void Init()
 {
 	glClearColor(1.0,1.0,1.0,1.0);
 	glLineWidth(1);
@@ -18,7 +16,7 @@ void Init(void)
 	glMatrixMode(GL_PROJECTION);
 }
 
-void Display(void) 
+void Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -42,7 +40,7 @@ void Display(void)
 	}
 	if(prevKey == '4')
 	{
-		auto temp = new GrilaCarteziana("poligon2.txt");
+		auto temp = new GrilaCarteziana("../poligons/poligon2.txt");
 		temp->draw_grid(14, 0.5);
 		temp->draw_poligon();
 		temp->draw_pixels();

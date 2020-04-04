@@ -1,4 +1,4 @@
-#include "GrilaCarteziana.h"
+#include "../include/GrilaCarteziana.h"
 
 GrilaCarteziana::GrilaCarteziana(const string& file_name)
 {
@@ -6,31 +6,31 @@ GrilaCarteziana::GrilaCarteziana(const string& file_name)
 	auto index = 0;
 
 	ifstream infile(file_name);
-	infile >> this->number_peaks_;
+	infile >> this->m_numberPeaks;
 
-	while (infile >> x >> y && number_peaks_ > 0)
+	while (infile >> x >> y && m_numberPeaks > 0)
 	{
-		poligon_coord_.add_element(index++, element_type(x, y));
-		number_peaks_--;
+		m_poligonCoord.add_element(index++, element_type(x, y));
+		m_numberPeaks--;
 	}
 
 	infile.close();
-	poligon_coord_.display_elements();
+	m_poligonCoord.display_elements();
 }
 
 auto GrilaCarteziana::draw_grid(const float numar, const float dist) -> void
 {
-	this->number_ = numar;
-	this->dist_ = dist;
-	this->number_cells_ = numar / 2;
-	this->dist_margin_ = 1 - (number_cells_ / (number_cells_ + dist_));
-	const auto start_x_point = -1 + dist_margin_;
-	const auto end_x_point = 1 - dist_margin_;
+	this->m_number = numar;
+	this->m_dist = dist;
+	this->m_numberCells = numar / 2;
+	this->m_distMargin = 1 - (m_numberCells / (m_numberCells + m_dist));
+	const auto start_x_point = -1 + m_distMargin;
+	const auto end_x_point = 1 - m_distMargin;
 	
 	glLineWidth(1.0);
 	glColor3f(0.1,0.1,0.1);
 
-	auto i = -number_cells_;
+	auto i = -m_numberCells;
 	auto set_row_size_counter = 0;
 		float common_y_point = 0;
 	float prev_y_value = 0;
@@ -38,10 +38,10 @@ auto GrilaCarteziana::draw_grid(const float numar, const float dist) -> void
 	// draw rows
 	while(true)
 	{
-		if(i > number_cells_) break;
+		if(i > m_numberCells) break;
 
 		prev_y_value = common_y_point;
-		common_y_point = static_cast<float>(i / (number_cells_ + dist_));
+		common_y_point = static_cast<float>(i / (m_numberCells + m_dist));
 
         glBegin(GL_LINES); 
 			glVertex2f(start_x_point, common_y_point);
@@ -50,21 +50,21 @@ auto GrilaCarteziana::draw_grid(const float numar, const float dist) -> void
 
 		if(set_row_size_counter == 2)
 		{
-			this->size_row_ = fabsf(prev_y_value - common_y_point);
+			this->m_sizeRow = fabsf(prev_y_value - common_y_point);
 		}
 
 		i++;
 		set_row_size_counter++;
 	}
  
-	i = -number_cells_;
+	i = -m_numberCells;
  
 	// draw coloumns
 	while(true)
 	{
-		if(i > number_cells_) break;
+		if(i > m_numberCells) break;
  
-		const auto common_x_point = static_cast<float>(i / (number_cells_ + dist_));
+		const auto common_x_point = static_cast<float>(i / (m_numberCells + m_dist));
  
         glBegin(GL_LINES); 
 			glVertex2f(common_x_point, end_x_point);
@@ -82,9 +82,9 @@ auto GrilaCarteziana::draw_round_point(const int point_x, const int point_y, con
 	if(color == "gray") glColor3f(0.2,0.2,0.2);
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
-	const auto margin_distant_err = 2 - dist_margin_ * 2;
-	const auto point_x_position = -number_cells_ + point_x;
-	const auto point_y_position = -number_cells_ + point_y;
+	const auto margin_distant_err = 2 - m_distMargin * 2;
+	const auto point_x_position = -m_numberCells + point_x;
+	const auto point_y_position = -m_numberCells + point_y;
 
 	glBegin(GL_POLYGON);
 		float angle = 0;
@@ -93,8 +93,8 @@ auto GrilaCarteziana::draw_round_point(const int point_x, const int point_y, con
 		{
 			if(angle >= 2*PI) break;
 
-			const auto output_x = (point_x_position + radius * sin(angle)) / (number_cells_ + dist_);
-			const auto output_y = (point_y_position + radius * cos(angle)) / (number_cells_ + dist_);
+			const auto output_x = (point_x_position + radius * sin(angle)) / (m_numberCells + m_dist);
+			const auto output_y = (point_y_position + radius * cos(angle)) / (m_numberCells + m_dist);
 			glVertex2f(output_x, output_y);
 
 			angle += 0.01;
@@ -112,11 +112,11 @@ auto GrilaCarteziana::draw_square_point(const int point_x, const int point_y, co
 		glColor3f(1, 0.1, 0.1);
 	}
 
-	const auto point_x_position = point_x + -number_cells_;
-	const auto point_y_position = point_y + -number_cells_;
+	const auto point_x_position = point_x + -m_numberCells;
+	const auto point_y_position = point_y + -m_numberCells;
 
-	const auto output_x = static_cast<float>(point_x_position / (number_cells_ + dist_));
-	const auto output_y = static_cast<float>(point_y_position / (number_cells_ + dist_));
+	const auto output_x = static_cast<float>(point_x_position / (m_numberCells + m_dist));
+	const auto output_y = static_cast<float>(point_y_position / (m_numberCells + m_dist));
 	
 	glBegin(GL_POINTS);
 		glVertex2f(output_x, output_y);
@@ -125,7 +125,7 @@ auto GrilaCarteziana::draw_square_point(const int point_x, const int point_y, co
 
 auto GrilaCarteziana::draw_poligon() -> void
 {
-	auto points_list = poligon_coord_.get_element_type_list();
+	auto points_list = m_poligonCoord.get_element_type_list();
 
 	glLineWidth(3.0);
 	glColor3f(1, 0.1, 0.1);
@@ -134,11 +134,11 @@ auto GrilaCarteziana::draw_poligon() -> void
 	glBegin(GL_POLYGON);
 	    for (auto& it : points_list)
 	    {
-			const auto point_x_position = -number_cells_ + it.first;
-			const auto point_y_position = -number_cells_ + it.second;
+			const auto point_x_position = -m_numberCells + it.first;
+			const auto point_y_position = -m_numberCells + it.second;
 
-			const auto output_x = static_cast<float>(point_x_position / (number_cells_ + dist_));
-			const auto output_y = static_cast<float>(point_y_position / (number_cells_ + dist_));
+			const auto output_x = static_cast<float>(point_x_position / (m_numberCells + m_dist));
+			const auto output_y = static_cast<float>(point_y_position / (m_numberCells + m_dist));
 			    
 			glVertex2f(output_x, output_y);
 	    }
@@ -147,20 +147,20 @@ auto GrilaCarteziana::draw_poligon() -> void
 
 auto GrilaCarteziana::draw_ellipse(const int origin_x, const int origin_y, const int radius_x, const int radius_y) const -> void
 {
-	const auto margin_distant_err = dist_margin_ * 2;
+	const auto margin_distant_err = m_distMargin * 2;
 
-	const auto cells_left_x = size_row_ * (number_ - radius_x);
-	const auto cells_left_y = size_row_ * (number_ - radius_y);
+	const auto cells_left_x = m_sizeRow * (m_number - radius_x);
+	const auto cells_left_y = m_sizeRow * (m_number - radius_y);
 
 	const auto calculated_x_radius = 2 - margin_distant_err - cells_left_x;
 	const auto calculated_y_radius = 2 - margin_distant_err - cells_left_y;
 
 
-	const auto origin_x_position = -number_cells_ + origin_x;
-	const auto origin_y_position = -number_cells_ + origin_y;
+	const auto origin_x_position = -m_numberCells + origin_x;
+	const auto origin_y_position = -m_numberCells + origin_y;
 
-	const auto output_origin_x = static_cast<float>(origin_x_position / (number_cells_ + dist_));
-	const auto output_origin_y = static_cast<float>(origin_y_position / (number_cells_ + dist_));
+	const auto output_origin_x = static_cast<float>(origin_x_position / (m_numberCells + m_dist));
+	const auto output_origin_y = static_cast<float>(origin_y_position / (m_numberCells + m_dist));
 
 	glLineWidth(3.0);
 	glColor3f(1, 0.1, 0.1);
@@ -168,7 +168,7 @@ auto GrilaCarteziana::draw_ellipse(const int origin_x, const int origin_y, const
 	glBegin(GL_LINE_LOOP);
 		for(auto index = 0; index < 360; index++)
 		{
-			const float rad = index * DEG2RAD;
+			const double rad = index * DEG2RAD;
 
 			const auto output_x = cos(rad)*calculated_x_radius + output_origin_x;
 			const auto output_y = sin(rad)*calculated_y_radius + output_origin_y;
@@ -179,8 +179,8 @@ auto GrilaCarteziana::draw_ellipse(const int origin_x, const int origin_y, const
 
 void GrilaCarteziana::draw_ellipse_origin(const int radius) const
 {
-	const auto cells_left = size_row_ * (number_ - radius);
-	const auto margin_distant_err = dist_margin_ * 2;
+	const auto cells_left = m_sizeRow * (m_number - radius);
+	const auto margin_distant_err = m_distMargin * 2;
 	const auto calculated_radius = 2 - margin_distant_err - cells_left;
 
 	glLineWidth(3.0);
@@ -189,10 +189,10 @@ void GrilaCarteziana::draw_ellipse_origin(const int radius) const
 	glBegin(GL_LINE_LOOP);
 		for(auto index = 0; index < 360; index++)
 		{
-			const float rad = index * DEG2RAD;
+			const double rad = index * DEG2RAD;
 
-			const auto output_x = cos(rad)*calculated_radius - (1 - dist_margin_);
-			const auto output_y = sin(rad)*calculated_radius - (1 - dist_margin_);
+			const auto output_x = cos(rad)*calculated_radius - (1 - m_distMargin);
+			const auto output_y = sin(rad)*calculated_radius - (1 - m_distMargin);
 			
 			glVertex2f(output_x, output_y);
 		}
@@ -204,13 +204,13 @@ void GrilaCarteziana::draw_ellipse_origin(const int radius) const
 
 auto GrilaCarteziana::draw_pixels() -> void
 {
-	auto x_points = poligon_coord_.get_x_points();
-	auto y_points = poligon_coord_.get_y_points();
+	auto x_points = m_poligonCoord.get_x_points();
+	auto y_points = m_poligonCoord.get_y_points();
 	
-	for(auto i = 0; i <= number_; i++)
-		for(auto j = 0; j <= number_; j++)
+	for(auto i = 0; i <= m_number; i++)
+		for(auto j = 0; j <= m_number; j++)
 		{
-			const auto in_polygon = inside_the_polygon(poligon_coord_.get_pairs(), x_points, y_points, i, j);
+			const auto in_polygon = inside_the_polygon(m_poligonCoord.get_pairs(), x_points, y_points, i, j);
 			if(!in_polygon) continue;
 			draw_round_point(i, j, "");
 		}
@@ -227,13 +227,6 @@ auto GrilaCarteziana::inside_the_polygon(const int pol_lines, vector<float>& pol
   }
   return paritate;
 }
-
-
-auto GrilaCarteziana::intensificare_pixel(int x, int y, double length) -> void 
-{
-	draw_square_point(x, y, (round(fabs (length))) * 2, "red");
-}
-
 
 void GrilaCarteziana::umplereElipsa(int x0, int y0, int a, int b)
 {
@@ -323,9 +316,4 @@ void GrilaCarteziana::pixels(int x, int y, int length)
 }
 
 
-GrilaCarteziana::GrilaCarteziana()
-{
-}
 
-GrilaCarteziana::~GrilaCarteziana()
-= default;
